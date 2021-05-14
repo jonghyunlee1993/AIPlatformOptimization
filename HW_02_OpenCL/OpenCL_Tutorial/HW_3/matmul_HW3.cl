@@ -12,7 +12,11 @@ __kernel void matmul_HW3(
 
 	if (tidx < M && tidy < N)
 	{
-		/* fill here */
+		float Csub = 0.0f;
+		for(int k = 0; k < K; k++) // k
+			Csub += A[k * M + tidx] * B[tidy * K + k];
+
+		C[tidy * M + tidx] = Csub;
 	}
 }
 

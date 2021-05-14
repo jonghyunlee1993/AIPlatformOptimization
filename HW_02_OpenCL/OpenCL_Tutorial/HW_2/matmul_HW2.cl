@@ -12,9 +12,9 @@ __kernel void matmul_HW2(
 	{
 		float Csub = 0.0f;
 		for(int k = 0; k < N; k++) // k
-			Csub += A[/* fill here */] * B[/* fill here */];
+			Csub += A[k * N + tidx] * B[tidy * N +k];
 
-		C[/* fill here */] = Csub;
+		C[tidy * N + tidx] = Csub;
 	}
 }
 

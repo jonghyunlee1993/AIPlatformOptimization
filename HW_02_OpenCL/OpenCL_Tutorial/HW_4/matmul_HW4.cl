@@ -18,7 +18,15 @@ __kernel void matmul_HW4(
 		{
 			if (k < K)
 			{
-				/* fill here */
+				Csub += A[k++ * M + tidx] * B[tidy * K + k++];
+				Csub += A[k++ * M + tidx] * B[tidy * K + k++];
+				Csub += A[k++ * M + tidx] * B[tidy * K + k++];
+				Csub += A[k++ * M + tidx] * B[tidy * K + k++];
+				Csub += A[k++ * M + tidx] * B[tidy * K + k++];
+				Csub += A[k++ * M + tidx] * B[tidy * K + k++];
+				Csub += A[k++ * M + tidx] * B[tidy * K + k++];
+				Csub += A[k++ * M + tidx] * B[tidy * K + k++];
+
 			}
 		}
 

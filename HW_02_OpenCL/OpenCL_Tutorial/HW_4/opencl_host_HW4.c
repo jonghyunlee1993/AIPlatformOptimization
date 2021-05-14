@@ -127,14 +127,9 @@ int main(void) {
 	// Execute the OpenCL kernel on the list
 	size_t global_item_size[2] = {GEMM_M, GEMM_N};
 
-	double start_time, end_time;
-
-	start_time = get_time();
 	ret = clEnqueueNDRangeKernel(command_queue, kernel, 2, NULL, 
 			global_item_size, NULL, 0, NULL, NULL);
 
-
-	end_time = get_time();
 	clFinish(command_queue);
 
 	// Read the memory buffer C on the device to the local variable C

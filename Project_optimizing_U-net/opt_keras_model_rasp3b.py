@@ -167,7 +167,7 @@ def tune_and_evaluate(tuning_opt):
 
 if __name__ == "__main__":
     #### DEVICE CONFIG ####
-    target = tvm.target.arm_cpu("rasp3b")
+    target = tvm.target.rasp()
 
     #### TUNING OPTION ####
     network = "unet_keras_rasp3b"
@@ -185,7 +185,7 @@ if __name__ == "__main__":
         ),
     }
 
-    num_threads = 2
+    num_threads = 1
     os.environ["TVM_NUM_THREADS"] = str(num_threads)
 
     tune_and_evaluate(tuning_option)

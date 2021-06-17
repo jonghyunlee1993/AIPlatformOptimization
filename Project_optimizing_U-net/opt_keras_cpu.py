@@ -17,57 +17,22 @@ def get_input_shape():
     from matplotlib import pyplot as plt
     from tensorflow.keras.applications.resnet50 import preprocess_input
 
+    # img_path = "src/sample_image.tif"
     img_url = "https://github.com/dmlc/mxnet.js/blob/main/data/cat.png?raw=true"
     img_path = download_testdata(img_url, "cat.png", module="data")
     img = Image.open(img_path).resize((256, 256))
-    # plt.imshow(img)
-    # plt.show()
+
     # input preprocess
     data = np.array(img)[np.newaxis, :].astype("float32")
     data = preprocess_input(data).transpose([0, 3, 1, 2])
-    # print("input_1", data.shape)
+
     return data.shape
 
 def get_network(name, batch_size):
     """Get the symbol definition and random weight of a network"""
-    # input_shape = (batch_size, 3, 224, 224)
-    # output_shape = (batch_size, 1000)
 
     input_shape  = (batch_size, 3, 256, 256)
-    output_shape = (batch_size, 1, 256, 256, 1)
-
-    # if "resnet" in name:
-    #     n_layer = int(name.split("-")[1])
-    #     mod, params = relay.testing.resnet.get_workload(
-    #         num_layers=n_layer, batch_size=batch_size, dtype=dtype
-    #     )
-    # elif "vgg" in name:
-    #     n_layer = int(name.split("-")[1])
-    #     mod, params = relay.testing.vgg.get_workload(
-    #         num_layers=n_layer, batch_size=batch_size, dtype=dtype
-    #     )
-    # elif name == "mobilenet":
-    #     mod, params = relay.testing.mobilenet.get_workload(batch_size=batch_size, dtype=dtype)
-    # elif name == "squeezenet_v1.1":
-    #     mod, params = relay.testing.squeezenet.get_workload(
-    #         batch_size=batch_size, version="1.1", dtype=dtype
-    #     )
-    # elif name == "inception_v3":
-    #     input_shape = (batch_size, 3, 299, 299)
-    #     mod, params = relay.testing.inception_v3.get_workload(batch_size=batch_size, dtype=dtype)
-    # elif name == "mxnet":
-    #     # an example for mxnet model
-    #     from mxnet.gluon.model_zoo.vision import get_model
-
-    #     block = get_model("resnet18_v1", pretrained=True)
-    #     mod, params = relay.frontend.from_mxnet(block, shape={"data": input_shape}, dtype=dtype)
-    #     net = mod["main"]
-    #     net = relay.Function(
-    #         net.params, relay.nn.softmax(net.body), None, net.type_params, net.attrs
-        
-    #     mod = tvm.IRModule.from_expr(net)
-    # else:
-    #     raise ValueError("Unsupported network: " + name)
+    output_shape = (batch_size, 1, 256, 256)
 
     model = tf.keras.models.load_model(
         'weights/unet_best_keras', 
@@ -154,7 +119,7 @@ def tune_and_evaluate(tuning_opt):
         dev = tvm.device(str(target), 0)
         module = runtime.GraphModule(lib["default"](dev))
         data_tvm = tvm.nd.array((np.random.uniform(size=input_shape)).astype(dtype))
-        module.set_input("data", data_tvm)
+        module.set_input("input2", data_tvm)
 
         # evaluate
         print("Evaluate inference time cost...")
@@ -167,10 +132,11 @@ def tune_and_evaluate(tuning_opt):
 
 if __name__ == "__main__":
     #### DEVICE CONFIG ####
-    target = tvm.target.rasp()
+    # target = tvm.target.cuda()
+    target = "llvm"
 
     #### TUNING OPTION ####
-    network = "unet_keras_rasp3b"
+    network = "unet_keras_llvm"
     log_file = "%s.log" % network
     dtype = "float32"
 
